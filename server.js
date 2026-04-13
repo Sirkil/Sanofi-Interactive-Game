@@ -9,10 +9,8 @@ const io = new Server(server);
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Helper to generate a word object
 const createWord = (id, text) => ({ id, text, claimed: false, guessedLetters: [] });
 
-// Game State for all 7 Teams
 let gameData = {
     1: { completed: 0, words: [createWord(1, 'TEAM'), createWord(2, 'WORK'), createWord(3, 'HELP'), createWord(4, 'GROW')] },
     2: { completed: 0, words: [createWord(1, 'SMART'), createWord(2, 'IDEAS'), createWord(3, 'DRIVE'), createWord(4, 'VALUE')] },
@@ -25,10 +23,9 @@ let gameData = {
 
 io.on('connection', (socket) => {
     
-    // Client asks for their specific team's data
+    // Send state directly, no more rooms (solves the dropping issue)
     socket.on('requestTeamData', (teamId) => {
-        socket.join(`team_${teamId}`); // Put them in a room for this team
-        socket.emit('gameStateUpdate', gameData[teamId]);
+        socket.emit('gameStateUpdate', { teamId: teamId, state: gameData[teamId] });
     });
 
     socket.on('claimWord', ({ teamId, wordId }) => {
@@ -38,7 +35,8 @@ io.on('connection', (socket) => {
         let wordObj = team.words.find(w => w.id === wordId);
         if (wordObj && !wordObj.claimed) {
             wordObj.claimed = true;
-            io.to(`team_${teamId}`).emit('gameStateUpdate', team); 
+            // Broadcast to EVERYONE, frontends will filter by teamId
+            io.emit('gameStateUpdate', { teamId: teamId, state: team }); 
             socket.emit('wordClaimedSuccess', wordObj); 
         }
     });
@@ -51,23 +49,17 @@ io.on('connection', (socket) => {
         if (!wordObj) return;
 
         if (wordObj.text.includes(letter)) {
-            // Correct Guess
             if (!wordObj.guessedLetters.includes(letter)) {
                 wordObj.guessedLetters.push(letter);
             }
             
-            // Check if this specific word is finished
-            let isWordComplete = wordObj.text.split('').every(l => wordObj.guessedLetters.includes(l));
-            
-            // Recalculate completed words for opacity (0 to 4)
             team.completed = team.words.filter(w => 
                 w.text.split('').every(l => w.guessedLetters.includes(l))
             ).length;
             
-            io.to(`team_${teamId}`).emit('gameStateUpdate', team);
+            io.emit('gameStateUpdate', { teamId: teamId, state: team });
             socket.emit('guessResult', { success: true, letter: letter });
         } else {
-            // Incorrect Guess
             socket.emit('guessResult', { success: false, letter: letter });
         }
     });

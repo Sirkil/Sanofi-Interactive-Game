@@ -1,21 +1,21 @@
 const socket = io();
 
-// Get the team number from the URL, default to 1 if missing
 const urlParams = new URLSearchParams(window.location.search);
-const teamId = urlParams.get('team') || 1;
+const currentTeamId = urlParams.get('team') || 1;
 
-// Tell server we want updates for this specific team
-socket.emit('requestTeamData', teamId);
+socket.emit('requestTeamData', currentTeamId);
 
-// Generate QR Code dynamically pointing to the mobile site for THIS team
-const mobileUrl = window.location.origin + `/mobile.html?team=${teamId}`;
+const mobileUrl = window.location.origin + `/mobile.html?team=${currentTeamId}`;
 document.getElementById('qr-image').src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(mobileUrl)}`;
 
-socket.on('gameStateUpdate', (teamState) => {
+// Listen for updates, ensuring it only processes updates for THIS screen's team
+socket.on('gameStateUpdate', (data) => {
+    if (data.teamId != currentTeamId) return; 
+    
+    const teamState = data.state;
     const container = document.getElementById('words-container');
     container.innerHTML = ''; 
 
-    // Render the 4 words for this team
     teamState.words.forEach(wordObj => {
         const wordDiv = document.createElement('div');
         wordDiv.className = 'word-display';
@@ -32,7 +32,6 @@ socket.on('gameStateUpdate', (teamState) => {
         container.appendChild(wordDiv);
     });
 
-    // Handle Opacity for "UNITED FOR IMPACT" (4 words = 25% increments)
     const glowText = document.getElementById('impact-glow');
     let opacity = 0;
     if (teamState.completed === 1) opacity = 0.25;
