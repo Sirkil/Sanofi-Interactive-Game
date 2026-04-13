@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Impact Game - Main Screen</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="main-screen-container">
+        <div class="qr-container">
+            <img id="qr-image" src="" alt="Scan to Play" width="150" height="150">
+            <p style="color: black; font-weight: bold; text-align: center; margin-top: 5px;">SCAN TO PLAY</p>
+        </div>
+
+        <div class="words-container" id="words-container">
+            </div>
+
+        <div class="impact-container">
+            <div class="impact-outline">UNITED FOR IMPACT</div>
+            <div class="impact-glow" id="impact-glow">UNITED FOR IMPACT</div>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="main.js"></script>
+</body>
+</html>

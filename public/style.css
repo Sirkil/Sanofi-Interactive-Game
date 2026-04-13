@@ -1,0 +1,91 @@
+/* Shared Styles */
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Arial', sans-serif; }
+body { background-color: #0d0d0d; color: white; overflow-x: hidden; }
+
+/* === MAIN SCREEN === */
+.main-screen-container { position: relative; width: 100vw; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.qr-container { position: absolute; top: 30px; right: 30px; background: white; padding: 10px; border-radius: 10px; }
+
+/* The 7 Target Words */
+.words-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 40px; margin-bottom: 80px; max-width: 90%; }
+.word-display { font-size: 4rem; font-weight: bold; letter-spacing: 5px; }
+.letter-box { color: transparent; -webkit-text-stroke: 2px #555; transition: all 0.3s ease; }
+.letter-box.guessed { color: #a855f7; -webkit-text-stroke: 0px; text-shadow: 0 0 15px #a855f7, 0 0 30px #a855f7; }
+
+/* Impact Sentence */
+.impact-container { position: relative; font-size: 3.5rem; font-weight: bold; letter-spacing: 4px; text-transform: uppercase; }
+.impact-outline { color: transparent; -webkit-text-stroke: 2px #555; }
+.impact-glow { position: absolute; top: 0; left: 0; color: white; text-shadow: 0 0 20px #a855f7, 0 0 40px #a855f7; opacity: 0; transition: opacity 1.5s ease-in-out; white-space: nowrap; }
+
+/* === MOBILE SCREEN === */
+.mobile-container { padding: 20px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; text-align: center; }
+h1 { margin-bottom: 20px; font-size: 1.8rem; }
+
+/* Grid of Words */
+.word-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 100%; max-width: 400px; }
+.word-btn { background: transparent; color: white; border: 2px solid #a855f7; padding: 20px; font-size: 1.2rem; border-radius: 10px; font-weight: bold; }
+.word-btn:disabled { opacity: 0.3; border-color: #555; pointer-events: none; }
+
+/* Keypad */
+.keypad-container { display: none; width: 100%; max-width: 400px; margin-top: 20px; }
+.keypad { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
+.key { background: #222; color: white; border: none; padding: 15px 0; font-size: 1.2rem; border-radius: 8px; font-weight: bold; }
+.key:disabled { opacity: 0.5; background: #111; pointer-events: none; }
+
+/* Toast Notification */
+.toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #ff3333; color: white; padding: 15px 30px; border-radius: 5px; font-weight: bold; opacity: 0; transition: opacity 0.3s; pointer-events: none; z-index: 1000; }
+.toast.show { opacity: 1; }
+
+/* Giant Glowing Letter Overlay */
+.success-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s; z-index: 2000; }
+.success-overlay.show { opacity: 1; }
+.giant-letter { font-size: 12rem; color: #a855f7; text-shadow: 0 0 40px #a855f7, 0 0 80px #a855f7; font-weight: bold; }
+/* === START SCREEN (Team Selector) === */
+.start-screen-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    text-align: center;
+}
+
+.title {
+    font-size: 3rem;
+    color: white;
+    letter-spacing: 5px;
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    color: #aaa;
+    font-size: 1.2rem;
+    margin-bottom: 50px;
+}
+
+.team-select-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+    max-width: 800px;
+}
+
+.team-select-btn {
+    background: transparent;
+    color: white;
+    border: 2px solid #555;
+    padding: 20px 40px;
+    font-size: 1.5rem;
+    font-weight: bold;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.team-select-btn:hover {
+    border-color: #a855f7;
+    color: #a855f7;
+    box-shadow: 0 0 15px rgba(168, 85, 247, 0.5);
+    transform: translateY(-5px);
+}
