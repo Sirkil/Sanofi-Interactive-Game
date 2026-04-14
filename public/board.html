@@ -3,27 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Impact Game - Main Screen</title>
+    <title>Impact Game - Trivia Board</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="main-screen-container">
-        <div class="qr-container">
-            <img id="qr-image" src="" alt="Scan to Play" width="120" height="120">
-            <p style="color: black; font-weight: bold; text-align: center; margin-top: 5px; font-size: 0.8rem;">SCAN TO PLAY</p>
-        </div>
+        
+        <h1 class="main-title">TRIVIA CHALLENGE</h1>
 
-        <h1 style="margin-bottom: 30px; font-size: 3rem; letter-spacing: 3px;">TRIVIA CHALLENGE</h1>
+        <div class="cards-container" id="cards-container"></div>
 
-        <div class="questions-container" id="questions-container"></div>
-
-        <div class="impact-container" style="margin-top: 40px;">
+        <div class="impact-container">
             <div class="impact-outline">UNITED FOR IMPACT</div>
             <div class="impact-glow" id="impact-glow">UNITED FOR IMPACT</div>
         </div>
     </div>
 
-    <script src="/socket.io/socket.io.js"></script>
     <script src="main.js"></script>
 </body>
 </html>

@@ -3,57 +3,97 @@
 body { background-color: #0d0d0d; color: white; overflow-x: hidden; }
 
 /* === MAIN SCREEN === */
-.main-screen-container { position: relative; width: 100vw; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-.qr-container { position: absolute; top: 30px; right: 30px; background: white; padding: 10px; border-radius: 10px; }
+.main-screen-container { position: relative; width: 100vw; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px; }
 
-/* Trivia Questions Layout */
-.questions-container { display: flex; flex-direction: column; gap: 20px; width: 80%; max-width: 1200px; }
-.question-row { display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.05); padding: 15px 30px; border-radius: 10px; }
-.q-text { font-size: 1.5rem; font-weight: bold; width: 60%; }
-.a-box { display: flex; gap: 10px; }
+.main-title { font-size: 3.5rem; letter-spacing: 5px; margin-bottom: 40px; text-shadow: 0 0 20px rgba(168, 85, 247, 0.5); }
 
-.letter-box { font-size: 2.5rem; font-weight: bold; color: transparent; -webkit-text-stroke: 1px #555; transition: all 0.3s ease; display: inline-block; width: 40px; text-align: center; }
-.letter-box.guessed { -webkit-text-stroke: 0px; }
+/* Grid for the 7 Questions */
+.cards-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; width: 90%; max-width: 1400px; margin-bottom: 60px; }
+
+/* === FLIP CARD CSS === */
+.card-scene {
+    background-color: transparent;
+    width: 100%;
+    height: 200px;
+    perspective: 1000px; /* Gives the 3D depth effect */
+}
+
+.card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    transition: transform 0.8s cubic-bezier(0.4, 0.2, 0.2, 1);
+    transform-style: preserve-3d; /* Keeps front and back connected during rotation */
+}
+
+/* The class toggled by JS to trigger the flip */
+.card-scene.flipped .card-inner {
+    transform: rotateY(180deg);
+}
+
+.card-front, .card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    border-radius: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+/* Front of Card - Unified Purple Accents */
+.card-front {
+    background: rgba(255,255,255,0.05);
+    border: 2px solid rgba(168, 85, 247, 0.3); 
+    border-top: 5px solid #a855f7; 
+}
+
+.question-text { 
+    color: white; 
+    font-size: 1.3rem; 
+    font-weight: bold; 
+    margin-bottom: 20px; 
+    line-height: 1.4; 
+}
+
+.reveal-btn {
+    background: transparent;
+    color: white;
+    border: 2px solid white;
+    padding: 10px 20px;
+    font-size: 1rem;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+.reveal-btn:hover { 
+    background: white; 
+    color: black; 
+    box-shadow: 0 0 15px rgba(255,255,255,0.5);
+}
+
+/* Back of Card - Solid Purple */
+.card-back {
+    background: #a855f7; 
+    color: white; 
+    transform: rotateY(180deg); /* Rendered backwards initially */
+}
+
+.answer-text { 
+    font-size: 3rem; 
+    font-weight: bold; 
+    letter-spacing: 5px; 
+    text-transform: uppercase; 
+}
 
 /* Impact Sentence */
-.impact-container { position: relative; font-size: 3rem; font-weight: bold; letter-spacing: 4px; text-transform: uppercase; }
+.impact-container { position: relative; font-size: 3.5rem; font-weight: bold; letter-spacing: 4px; text-transform: uppercase; margin-top: 20px;}
 .impact-outline { color: transparent; -webkit-text-stroke: 2px #555; }
-.impact-glow { position: absolute; top: 0; left: 0; color: white; text-shadow: 0 0 20px #fff, 0 0 40px #fff; opacity: 0; transition: opacity 1.5s ease-in-out; white-space: nowrap; }
-
-/* === MOBILE SCREEN === */
-.mobile-container { padding: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; text-align: center; transition: background-color 0.5s; }
-.phase-container { display: none; flex-direction: column; align-items: center; width: 100%; }
-.phase-container.active { display: flex; }
-h1 { margin-bottom: 20px; font-size: 1.8rem; text-shadow: 1px 1px 5px rgba(0,0,0,0.5); }
-
-/* Color Phase Grid */
-.color-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 100%; max-width: 400px; }
-.color-btn { padding: 25px; font-size: 1.2rem; font-weight: bold; border-radius: 10px; border: 2px solid rgba(255,255,255,0.5); color: white; cursor: pointer; text-shadow: 1px 1px 3px rgba(0,0,0,0.8); }
-
-/* Team 1-4 Grid */
-.word-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 100%; max-width: 400px; }
-.word-btn { background: rgba(0,0,0,0.4); color: white; border: 2px solid white; padding: 25px; font-size: 1.2rem; border-radius: 10px; font-weight: bold; }
-.word-btn:disabled { opacity: 0.4; border-style: dashed; }
-
-/* Carousel Layout */
-.carousel-container { width: 100%; max-width: 400px; overflow: hidden; position: relative; }
-.carousel { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 20px; padding: 20px 50vw; /* Padding forces first item to center */ }
-.carousel::-webkit-scrollbar { display: none; }
-.carousel-card { scroll-snap-align: center; flex: 0 0 120px; height: 150px; background: rgba(255,255,255,0.2); border: 3px solid white; display: flex; align-items: center; justify-content: center; font-size: 5rem; font-weight: bold; border-radius: 15px; cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
-.carousel-card:active { transform: scale(0.95); }
-
-/* Background Colors */
-.bg-red { background-color: #ff4d4d; }
-.bg-orange { background-color: #ffa64d; }
-.bg-yellow { background-color: #d4d400; } /* Darkened yellow for white text contrast */
-.bg-green { background-color: #33cc33; }
-.bg-blue { background-color: #4d4dff; }
-.bg-indigo { background-color: #8a2be2; }
-.bg-violet { background-color: #ee82ee; }
-
-/* Toast & Success */
-.toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #ff3333; color: white; padding: 15px 30px; border-radius: 5px; font-weight: bold; opacity: 0; transition: opacity 0.3s; pointer-events: none; z-index: 1000; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
-.toast.show { opacity: 1; }
-.success-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #ffffff; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s; z-index: 2000; }
-.success-overlay.show { opacity: 1; pointer-events: all; }
-.giant-letter { font-size: 20rem; font-weight: bold; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+.impact-glow { position: absolute; top: 0; left: 0; color: white; text-shadow: 0 0 20px #a855f7, 0 0 40px #a855f7; opacity: 0; transition: opacity 1.5s ease-in-out; white-space: nowrap; }

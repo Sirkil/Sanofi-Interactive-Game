@@ -3,30 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Impact Game - Start</title>
+    <title>Impact Game - Trivia Board</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="start-screen-container">
-        <h1 class="title">IMPACT GAME EVENT</h1>
-        <p class="subtitle">Select the current team to cast their board to the screen</p>
+    <div class="main-screen-container">
         
-        <div class="team-select-grid">
-            <button class="team-select-btn" onclick="startRound(1)">Team 1</button>
-            <button class="team-select-btn" onclick="startRound(2)">Team 2</button>
-            <button class="team-select-btn" onclick="startRound(3)">Team 3</button>
-            <button class="team-select-btn" onclick="startRound(4)">Team 4</button>
-            <button class="team-select-btn" onclick="startRound(5)">Team 5</button>
-            <button class="team-select-btn" onclick="startRound(6)">Team 6</button>
-            <button class="team-select-btn" onclick="startRound(7)">Team 7</button>
+        <h1 class="main-title">TRIVIA CHALLENGE</h1>
+
+        <div class="cards-container" id="cards-container"></div>
+
+        <div class="impact-container">
+            <div class="impact-outline">UNITED FOR IMPACT</div>
+            <div class="impact-glow" id="impact-glow">UNITED FOR IMPACT</div>
         </div>
     </div>
 
-    <script>
-        // Redirects the big screen to the chosen team's board
-        function startRound(teamId) {
-            window.location.href = `/board.html?team=${teamId}`;
-        }
-    </script>
+    <script src="main.js"></script>
 </body>
 </html>
