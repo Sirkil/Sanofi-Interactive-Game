@@ -1,43 +1,60 @@
 const socket = io();
 
-const urlParams = new URLSearchParams(window.location.search);
-const currentTeamId = urlParams.get('team') || 1;
-
-socket.emit('requestTeamData', currentTeamId);
-
-const mobileUrl = window.location.origin + `/mobile.html?team=${currentTeamId}`;
+// Generate QR Code pointing to mobile app
+const mobileUrl = window.location.origin + `/mobile.html`;
 document.getElementById('qr-image').src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(mobileUrl)}`;
 
-// Listen for updates, ensuring it only processes updates for THIS screen's team
-socket.on('gameStateUpdate', (data) => {
-    if (data.teamId != currentTeamId) return; 
-    
-    const teamState = data.state;
-    const container = document.getElementById('words-container');
-    container.innerHTML = ''; 
+// CSS Variable Map for the Colors
+const colorMap = {
+    red: '#ff4d4d', orange: '#ffa64d', yellow: '#ffff4d',
+    green: '#4dff4d', blue: '#4d4dff', indigo: '#b366ff', violet: '#ff4dff'
+};
 
-    teamState.words.forEach(wordObj => {
-        const wordDiv = document.createElement('div');
-        wordDiv.className = 'word-display';
+socket.on('gameStateUpdate', (state) => {
+    const container = document.getElementById('questions-container');
+    container.innerHTML = ''; 
+    let completedCount = 0;
+
+    Object.keys(state).forEach(colorKey => {
+        const qData = state[colorKey];
         
-        wordObj.text.split('').forEach(letter => {
+        const row = document.createElement('div');
+        row.className = 'question-row';
+
+        // 1. Add Question Text
+        const qText = document.createElement('div');
+        qText.className = 'q-text';
+        qText.innerText = qData.q;
+        qText.style.color = colorMap[colorKey]; // Color code the question
+        row.appendChild(qText);
+
+        // 2. Add Answer Boxes
+        const aBox = document.createElement('div');
+        aBox.className = 'a-box';
+        
+        let isWordComplete = true;
+
+        qData.a.split('').forEach(letter => {
             const span = document.createElement('span');
             span.innerText = letter;
             span.className = 'letter-box';
-            if (wordObj.guessedLetters.includes(letter)) {
+            
+            if (qData.guessedLetters.includes(letter)) {
                 span.classList.add('guessed');
+                span.style.color = colorMap[colorKey];
+                span.style.textShadow = `0 0 15px ${colorMap[colorKey]}`;
+            } else {
+                isWordComplete = false;
             }
-            wordDiv.appendChild(span);
+            aBox.appendChild(span);
         });
-        container.appendChild(wordDiv);
+        
+        if (isWordComplete) completedCount++;
+
+        row.appendChild(aBox);
+        container.appendChild(row);
     });
 
-    const glowText = document.getElementById('impact-glow');
-    let opacity = 0;
-    if (teamState.completed === 1) opacity = 0.25;
-    if (teamState.completed === 2) opacity = 0.50;
-    if (teamState.completed === 3) opacity = 0.75;
-    if (teamState.completed === 4) opacity = 1.0;
-    
-    glowText.style.opacity = opacity;
+    // Update "UNITED FOR IMPACT" Opacity (7 total questions)
+    document.getElementById('impact-glow').style.opacity = completedCount / 7;
 });

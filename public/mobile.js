@@ -1,74 +1,96 @@
 const socket = io();
-const urlParams = new URLSearchParams(window.location.search);
-const teamId = urlParams.get('team') || 1;
 
-let myWordId = null;
+let myColor = null;
+let myTeamNumber = null;
 
-socket.emit('requestTeamData', teamId);
-
-const selectionPhase = document.getElementById('selection-phase');
+const colorPhase = document.getElementById('color-phase');
+const teamPhase = document.getElementById('team-phase');
 const gameplayPhase = document.getElementById('gameplay-phase');
-const wordGrid = document.getElementById('word-grid');
-const keypad = document.getElementById('keypad');
+const appContainer = document.getElementById('app-container');
 
-const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
-alphabet.forEach(letter => {
+const colors = ['red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet'];
+
+// 1. Build Color Grid
+const colorGrid = document.getElementById('color-grid');
+colors.forEach(color => {
     const btn = document.createElement('button');
-    btn.className = 'key';
-    btn.id = `key-${letter}`;
-    btn.innerText = letter;
-    btn.onclick = () => guessLetter(letter);
-    keypad.appendChild(btn);
+    btn.className = `color-btn bg-${color}`;
+    btn.innerText = color.toUpperCase();
+    btn.onclick = () => selectColor(color);
+    colorGrid.appendChild(btn);
 });
 
-socket.on('gameStateUpdate', (data) => {
-    if (data.teamId != teamId || myWordId !== null) return; 
+function selectColor(color) {
+    myColor = color;
+    colorPhase.classList.remove('active');
+    teamPhase.classList.add('active');
+}
 
-    const teamState = data.state;
-    wordGrid.innerHTML = '';
-    
-    teamState.words.forEach(wordObj => {
-        const btn = document.createElement('button');
-        btn.className = 'word-btn';
-        
-        // Show the ACTUAL word instead of "Word 1"
-        btn.innerText = wordObj.text; 
-        
-        if (wordObj.claimed) {
-            btn.disabled = true;
-            btn.innerText = 'Claimed';
-        } else {
-            btn.onclick = () => socket.emit('claimWord', { teamId, wordId: wordObj.id });
+// 2. Build Team Grid (1 to 4) & Listen for updates to disable taken slots
+socket.on('gameStateUpdate', (state) => {
+    if (myColor && !myTeamNumber) {
+        const teamGrid = document.getElementById('team-grid');
+        teamGrid.innerHTML = '';
+        const colorData = state[myColor];
+
+        for (let i = 1; i <= 4; i++) {
+            const btn = document.createElement('button');
+            btn.className = 'word-btn';
+            btn.innerText = `Team ${i}`;
+            
+            if (colorData.claimedSlots.includes(i)) {
+                btn.disabled = true;
+                btn.innerText = `Team ${i} (Taken)`;
+            } else {
+                btn.onclick = () => socket.emit('claimSlot', { color: myColor, teamNumber: i });
+            }
+            teamGrid.appendChild(btn);
         }
-        wordGrid.appendChild(btn);
+    }
+});
+
+// 3. Move to Carousel Phase
+socket.on('slotClaimedSuccess', (data) => {
+    myTeamNumber = data.teamNumber;
+    teamPhase.classList.remove('active');
+    gameplayPhase.classList.add('active');
+    
+    // Change background to match the selected color
+    appContainer.className = `mobile-container bg-${myColor}`;
+
+    // Build Alphabet Carousel
+    const carousel = document.getElementById('carousel');
+    const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+    alphabet.forEach(letter => {
+        const card = document.createElement('div');
+        card.className = 'carousel-card';
+        card.id = `card-${letter}`;
+        card.innerText = letter;
+        card.onclick = () => socket.emit('guessLetter', { color: myColor, letter: letter });
+        carousel.appendChild(card);
     });
 });
 
-socket.on('wordClaimedSuccess', (wordObj) => {
-    myWordId = wordObj.id;
-    selectionPhase.style.display = 'none';
-    gameplayPhase.style.display = 'block';
-    document.getElementById('my-word-title').innerText = `Your Word: ${wordObj.text}`;
-});
-
-function guessLetter(letter) {
-    socket.emit('guessLetter', { teamId, wordId: myWordId, letter });
-}
-
+// Handle Results
 socket.on('guessResult', (result) => {
-    const btn = document.getElementById(`key-${result.letter}`);
-    
+    if (!myColor) return;
+
     if (result.success) {
-        // Show the white screen with the giant letter
+        // Show white screen with letter
         const overlay = document.getElementById('success-overlay');
-        document.getElementById('giant-letter').innerText = result.letter;
-        overlay.classList.add('show');
+        const giantLetter = document.getElementById('giant-letter');
         
-        // WE DO NOT REMOVE THE OVERLAY. 
-        // This acts as the "lock" so they can only guess one letter!
+        giantLetter.innerText = result.letter;
+        
+        // Match the giant letter text color to their chosen team color
+        const colorMap = { red: '#ff4d4d', orange: '#ffa64d', yellow: '#ffff4d', green: '#4dff4d', blue: '#4d4dff', indigo: '#b366ff', violet: '#ff4dff' };
+        giantLetter.style.color = colorMap[myColor];
+        
+        overlay.classList.add('show');
     } else {
         showToast(`Letter ${result.letter} is not in the word!`);
-        btn.disabled = true; 
+        document.getElementById(`card-${result.letter}`).style.opacity = '0.3';
+        document.getElementById(`card-${result.letter}`).style.pointerEvents = 'none';
     }
 });
 

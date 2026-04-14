@@ -9,56 +9,46 @@ const io = new Server(server);
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-const createWord = (id, text) => ({ id, text, claimed: false, guessedLetters: [] });
-
-let gameData = {
-    1: { completed: 0, words: [createWord(1, 'TEAM'), createWord(2, 'WORK'), createWord(3, 'HELP'), createWord(4, 'GROW')] },
-    2: { completed: 0, words: [createWord(1, 'SMART'), createWord(2, 'IDEAS'), createWord(3, 'DRIVE'), createWord(4, 'VALUE')] },
-    3: { completed: 0, words: [createWord(1, 'CLEAR'), createWord(2, 'GOALS'), createWord(3, 'BRING'), createWord(4, 'FOCUS')] },
-    4: { completed: 0, words: [createWord(1, 'UNITE'), createWord(2, 'MINDS'), createWord(3, 'REACH'), createWord(4, 'PEAKS')] },
-    5: { completed: 0, words: [createWord(1, 'BRAVE'), createWord(2, 'MOVES'), createWord(3, 'SPARK'), createWord(4, 'SHIFT')] },
-    6: { completed: 0, words: [createWord(1, 'SOLID'), createWord(2, 'TEAMS'), createWord(3, 'SHARE'), createWord(4, 'WINS')] },
-    7: { completed: 0, words: [createWord(1, 'GREAT'), createWord(2, 'LEADS'), createWord(3, 'BRING'), createWord(4, 'PRIDE')] }
+// New Game State: 7 Color-Coded Questions
+let gameState = {
+    red:    { q: "What is the word equivalent to speed?", a: "FAST", claimedSlots: [], guessedLetters: [] },
+    orange: { q: "What do you call a group of wolves?", a: "PACK", claimedSlots: [], guessedLetters: [] },
+    yellow: { q: "What is the center of our solar system?", a: "STAR", claimedSlots: [], guessedLetters: [] },
+    green:  { q: "What do plants grow from?", a: "SEED", claimedSlots: [], guessedLetters: [] },
+    blue:   { q: "What covers 70% of the Earth?", a: "WATER", claimedSlots: [], guessedLetters: [] },
+    indigo: { q: "What is the color of a clear night sky?", a: "DARK", claimedSlots: [], guessedLetters: [] },
+    violet: { q: "What is a fragrant purple flower?", a: "LILAC", claimedSlots: [], guessedLetters: [] }
 };
 
 io.on('connection', (socket) => {
     
-    // Send state directly, no more rooms (solves the dropping issue)
-    socket.on('requestTeamData', (teamId) => {
-        socket.emit('gameStateUpdate', { teamId: teamId, state: gameData[teamId] });
-    });
+    // Send full state to anyone who connects
+    socket.emit('gameStateUpdate', gameState);
 
-    socket.on('claimWord', ({ teamId, wordId }) => {
-        let team = gameData[teamId];
-        if (!team) return;
+    // Player selects a color and a team number (1-4)
+    socket.on('claimSlot', ({ color, teamNumber }) => {
+        let questionData = gameState[color];
+        if (!questionData) return;
         
-        let wordObj = team.words.find(w => w.id === wordId);
-        if (wordObj && !wordObj.claimed) {
-            wordObj.claimed = true;
-            // Broadcast to EVERYONE, frontends will filter by teamId
-            io.emit('gameStateUpdate', { teamId: teamId, state: team }); 
-            socket.emit('wordClaimedSuccess', wordObj); 
+        // Prevent multiple people from picking the same Team # under the same color
+        if (!questionData.claimedSlots.includes(teamNumber)) {
+            questionData.claimedSlots.push(teamNumber);
+            io.emit('gameStateUpdate', gameState); 
+            socket.emit('slotClaimedSuccess', { color, teamNumber, word: questionData.a }); 
         }
     });
 
-    socket.on('guessLetter', ({ teamId, wordId, letter }) => {
-        let team = gameData[teamId];
-        if (!team) return;
+    // Player guesses a letter
+    socket.on('guessLetter', ({ color, letter }) => {
+        let questionData = gameState[color];
+        if (!questionData) return;
 
-        let wordObj = team.words.find(w => w.id === wordId);
-        if (!wordObj) return;
-
-        if (wordObj.text.includes(letter)) {
-            if (!wordObj.guessedLetters.includes(letter)) {
-                wordObj.guessedLetters.push(letter);
+        if (questionData.a.includes(letter)) {
+            if (!questionData.guessedLetters.includes(letter)) {
+                questionData.guessedLetters.push(letter);
             }
-            
-            team.completed = team.words.filter(w => 
-                w.text.split('').every(l => w.guessedLetters.includes(l))
-            ).length;
-            
-            io.emit('gameStateUpdate', { teamId: teamId, state: team });
-            socket.emit('guessResult', { success: true, letter: letter });
+            io.emit('gameStateUpdate', gameState);
+            socket.emit('guessResult', { success: true, letter: letter, color: color });
         } else {
             socket.emit('guessResult', { success: false, letter: letter });
         }

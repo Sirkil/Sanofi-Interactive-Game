@@ -7,18 +7,23 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="mobile-container">
+    <div class="mobile-container" id="app-container">
         
-        <div id="selection-phase">
-            <h1>Choose your word</h1>
-            <div class="word-grid" id="word-grid">
-                </div>
+        <div id="color-phase" class="phase-container active">
+            <h1>Choose Your Color</h1>
+            <div class="color-grid" id="color-grid"></div>
         </div>
 
-        <div class="keypad-container" id="gameplay-phase">
-            <h1 id="my-word-title">Your Word: </h1>
-            <div class="keypad" id="keypad">
-                </div>
+        <div id="team-phase" class="phase-container">
+            <h1>Choose Your Team</h1>
+            <div class="word-grid" id="team-grid"></div>
+        </div>
+
+        <div id="gameplay-phase" class="phase-container">
+            <h1>Swipe & Select Letter</h1>
+            <div class="carousel-container">
+                <div class="carousel" id="carousel"></div>
+            </div>
         </div>
 
     </div>
