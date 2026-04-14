@@ -30,7 +30,7 @@ colors.forEach(color => {
     colorGrid.appendChild(btn);
 });
 
-// 2. Build Team Grid
+// 2. Build Team Grid (Reverted back to standard Team 1-4)
 const teamGrid = document.getElementById('team-grid');
 for (let i = 1; i <= 4; i++) {
     const btn = document.createElement('button');
@@ -39,7 +39,9 @@ for (let i = 1; i <= 4; i++) {
     btn.onclick = () => {
         teamPhase.classList.remove('active');
         gameplayPhase.classList.add('active');
-        appContainer.className = `mobile-container bg-${myColor}`; // Change BG color
+        
+        // Change the app background to the chosen color
+        appContainer.className = `mobile-container bg-${myColor}`; 
         initCarousel();
     };
     teamGrid.appendChild(btn);
@@ -66,11 +68,12 @@ function guessLetter(letter) {
         
         giantLetter.innerText = letter;
         
-        // Color map applied to the BACKGROUND instead of the text
+        // Color map for the background
         const colorMap = { red: '#ff4d4d', orange: '#ffa64d', yellow: '#d4d400', green: '#33cc33', blue: '#4d4dff', indigo: '#8a2be2', violet: '#ee82ee' };
         
         // Make the background the team color
         overlay.style.backgroundColor = colorMap[myColor]; 
+        
         // Make the giant letter pure white
         giantLetter.style.color = '#ffffff'; 
         
