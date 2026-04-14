@@ -66,9 +66,13 @@ function guessLetter(letter) {
         
         giantLetter.innerText = letter;
         
-        // Color map for the giant text
+        // Color map applied to the BACKGROUND instead of the text
         const colorMap = { red: '#ff4d4d', orange: '#ffa64d', yellow: '#d4d400', green: '#33cc33', blue: '#4d4dff', indigo: '#8a2be2', violet: '#ee82ee' };
-        giantLetter.style.color = colorMap[myColor];
+        
+        // Make the background the team color
+        overlay.style.backgroundColor = colorMap[myColor]; 
+        // Make the giant letter pure white
+        giantLetter.style.color = '#ffffff'; 
         
         overlay.classList.add('show');
     } else {
