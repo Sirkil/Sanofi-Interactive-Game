@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Question</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <button class="back-btn" onclick="location.href='index.html'">🔙 Back to Hub</button>
+
+    <div class="main-screen-container">
+        <div class="qr-container">
+            <img id="qr-image" src="" alt="Scan to Play" width="200" height="200">
+            <p style="color: black; font-weight: bold; font-size: 1.2rem; margin-top: 10px; text-align: center;">SCAN TO JOIN</p>
+        </div>
+
+        <h2 class="live-question" id="question-text">Loading question...</h2>
+    </div>
+
+    <script>
+        // The Questions Database
+        const triviaData = {
+            1: "What is the word equivalent to speed?",
+            2: "What do you call a group of wolves?",
+            3: "What is the center of our solar system?",
+            4: "What do plants grow from?",
+            5: "What covers 70% of the Earth?",
+            6: "What is the color of a clear night sky?",
+            7: "What is a fragrant purple flower?"
+        };
+
+        // Get the question ID from the URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const qId = urlParams.get('id') || 1;
+
+        // Set the text
+        document.getElementById('question-text').innerText = triviaData[qId];
+
+        // Generate QR Code pointing to the mobile site
+        const mobileUrl = window.location.origin + `/mobile.html?id=${qId}`;
+        document.getElementById('qr-image').src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(mobileUrl)}`;
+    </script>
+</body>
+</html>

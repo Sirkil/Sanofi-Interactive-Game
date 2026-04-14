@@ -10,31 +10,30 @@
     <div class="mobile-container" id="app-container">
         
         <div id="color-phase" class="phase-container active">
-            <h1>Choose Your Color</h1>
+            <h1>Select Your Color</h1>
             <div class="color-grid" id="color-grid"></div>
         </div>
 
         <div id="team-phase" class="phase-container">
-            <h1>Choose Your Team</h1>
+            <h1>Select Your Team</h1>
             <div class="word-grid" id="team-grid"></div>
         </div>
 
-        <div id="gameplay-phase" class="phase-container">
-            <h1>Swipe & Select Letter</h1>
-            <div class="carousel-container">
-                <div class="carousel" id="carousel"></div>
+        <div id="gameplay-phase" class="phase-container fullscreen-phase">
+            <h1 style="position: absolute; top: 20px;">Swipe & Select</h1>
+            <div class="carousel-container fullscreen">
+                <div class="carousel fullscreen" id="carousel"></div>
             </div>
         </div>
 
     </div>
 
-    <div class="toast" id="toast">Letter not found!</div>
+    <div class="toast" id="toast">Wrong Letter!</div>
     
     <div class="success-overlay" id="success-overlay">
-        <div class="giant-letter" id="giant-letter">W</div>
+        <div class="giant-letter" id="giant-letter"></div>
     </div>
 
-    <script src="/socket.io/socket.io.js"></script>
     <script src="mobile.js"></script>
 </body>
 </html>
