@@ -15,37 +15,48 @@ const teamPhase = document.getElementById('team-phase');
 const gameplayPhase = document.getElementById('gameplay-phase');
 const appContainer = document.getElementById('app-container');
 
-// 1. Build Color Grid
+// 1. Build Color Grid & Handle Selection
 const colors = ['red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet'];
 const colorGrid = document.getElementById('color-grid');
+
 colors.forEach(color => {
     const btn = document.createElement('button');
     btn.className = `color-btn bg-${color}`;
     btn.innerText = color.toUpperCase();
+    
     btn.onclick = () => {
         myColor = color;
+        const capitalizedColor = color.charAt(0).toUpperCase() + color.slice(1);
+        
+        // Switch phases
         colorPhase.classList.remove('active');
         teamPhase.classList.add('active');
+        
+        // NEW: Change the background immediately to the selected color
+        appContainer.className = `mobile-container bg-${myColor}`;
+        
+        // NEW: Set the subtitle text
+        document.getElementById('team-subtitle').innerText = `You are a ${capitalizedColor} team member`;
+
+        // NEW: Build Team Grid dynamically with the chosen color name
+        const teamGrid = document.getElementById('team-grid');
+        teamGrid.innerHTML = ''; // Clear it first
+        
+        for (let i = 1; i <= 4; i++) {
+            const teamBtn = document.createElement('button');
+            teamBtn.className = 'word-btn';
+            teamBtn.innerText = `${capitalizedColor} ${i}`; // Sets text to "Red 1", etc.
+            
+            teamBtn.onclick = () => {
+                teamPhase.classList.remove('active');
+                gameplayPhase.classList.add('active');
+                initCarousel();
+            };
+            teamGrid.appendChild(teamBtn);
+        }
     };
     colorGrid.appendChild(btn);
 });
-
-// 2. Build Team Grid (Reverted back to standard Team 1-4)
-const teamGrid = document.getElementById('team-grid');
-for (let i = 1; i <= 4; i++) {
-    const btn = document.createElement('button');
-    btn.className = 'word-btn';
-    btn.innerText = `Team ${i}`;
-    btn.onclick = () => {
-        teamPhase.classList.remove('active');
-        gameplayPhase.classList.add('active');
-        
-        // Change the app background to the chosen color
-        appContainer.className = `mobile-container bg-${myColor}`; 
-        initCarousel();
-    };
-    teamGrid.appendChild(btn);
-}
 
 // 3. Build Alphabet Carousel
 function initCarousel() {
