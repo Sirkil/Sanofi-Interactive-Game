@@ -91,7 +91,11 @@ colors.forEach(color => {
 // 3. Build Alphabet Carousel
 function initCarousel() {
     const carousel = document.getElementById('carousel');
-    'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').forEach(letter => {
+    
+    // Split the alphabet into an array and shuffle it randomly
+    const shuffledAlphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').sort(() => 0.5 - Math.random());
+    
+    shuffledAlphabet.forEach(letter => {
         const card = document.createElement('div');
         card.className = 'carousel-card';
         card.id = `card-${letter}`;
