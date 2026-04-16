@@ -107,29 +107,21 @@ function initCarousel() {
 
 // 4. Handle Guesses Locally
 function guessLetter(letter) {
-    if (correctAnswer.includes(letter)) {
-        const overlay = document.getElementById('success-overlay');
-        const giantLetter = document.getElementById('giant-letter');
-        
-        giantLetter.innerText = letter;
-        
-        // Color map for the background
-        const colorMap = { red: '#ff4d4d', orange: '#ffa64d', yellow: '#d4d400', green: '#33cc33', blue: '#4d4dff', indigo: '#8a2be2', violet: '#ee82ee' };
-        
-        // Make the background the team color
-        overlay.style.backgroundColor = colorMap[myColor]; 
-        
-        // Make the giant letter pure white
-        giantLetter.style.color = '#ffffff'; 
-        
-        overlay.classList.add('show');
-    } else {
-        const toast = document.getElementById('toast');
-        toast.classList.add('show');
-        setTimeout(() => toast.classList.remove('show'), 2000);
-        
-        // Dim the wrong letter
-        document.getElementById(`card-${letter}`).style.opacity = '0.3';
-        document.getElementById(`card-${letter}`).style.pointerEvents = 'none';
-    }
+    const overlay = document.getElementById('success-overlay');
+    const giantLetter = document.getElementById('giant-letter');
+    
+    // Set the text to the clicked letter unconditionally
+    giantLetter.innerText = letter;
+    
+    // Color map for the background
+    const colorMap = { red: '#ff4d4d', orange: '#ffa64d', yellow: '#d4d400', green: '#33cc33', blue: '#4d4dff', indigo: '#8a2be2', violet: '#ee82ee' };
+    
+    // Make the background the team color
+    overlay.style.backgroundColor = colorMap[myColor]; 
+    
+    // Make the giant letter pure white
+    giantLetter.style.color = '#ffffff'; 
+    
+    // Show the overlay immediately
+    overlay.classList.add('show');
 }
